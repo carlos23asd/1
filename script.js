@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'flv'
         },
         {
-            title: "Big Buck Bunny (HLS)",
-            url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+            title: "Solo eventos",
+            url: "https://manifest-gcp-us-east1-vop1.fastly.mux.com/dGuVCvN01Z1dOac9BJ8eFayqlEd01Tq7TiKSwnMiGvbbdlVpbjNb01jiF5boelMhawUpzMY00HZw613oFBEmv1ieGR00ySO1191q00is6v9i8AQuw/rendition.m3u8?cdn=fastly&exclude_pdt=false&expires=1738102380&live=1&rid=bTsv1EIqw87rryr4T4fYZyZ01tdBpoYr9Iy8J3wsj59k&skid=default&signature=Njc5OTU2NmNfYzIzODk1OTQzMmJjYmY5YTY3MTM2ZGFjZmI1YzBhZGI0NzI0NWIzYzc1ZjY2MmY4Y2Y3ZjI4OTBmOTRkMjFhYg%3D%3D&vsid=vEsQDzFdE01sFvuTUN5dyX6QZx00x7ZmqwvvcuwkxOTu02TC02doXyETEJamYl5A5EkP0102l5gkTBpiECn0200hnomB6YJhHUPEonzzNVtqUmDrDs011EBbXOBTW9G3zb1aYkX4K&CMCD=cid%3D%22sCgrwC01SM00zaYdB00EDw8xiIy15OXdD2MCN00NbwMtoks%22%2Csid%3D%2249de2222-c665-4395-a9cc-fcef86ebb173%22",
             type: 'hls'
         },
         {
