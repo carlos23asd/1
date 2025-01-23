@@ -9,21 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     const playlistItems = document.getElementById('playlistItems');
 
-    // Improved buffering and download configuration
-    const ADVANCED_BUFFER_CONFIG = {
-        maxBufferLength: 120,      // Increase buffer length to 120 seconds
-        maxBufferSize: 120 * 1000 * 1000,  // 120 MB buffer size
-        highWaterMark: 32,         // Increase network buffer
-        maxMaxBufferLength: 600,   // Maximum possible buffer length
-        liveSyncDurationCount: 3,  // For live streams
-        liveMaxLatencyDurationCount: 10,  // Reduce latency
-        manifestLoadingMaxRetry: 3, // More retry attempts
-        manifestLoadingRetryDelay: 1000,  // 1 second between retries
-        enableWebWorker: true,     // Use web workers for decoding
-        enableCodecCache: true     // Enable codec caching
-    };
-
-    // Add HLS.js library with advanced configuration
+    // Add HLS.js library for better HLS support
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
     document.head.appendChild(script);
@@ -39,24 +25,54 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'flv'
         },
         {
-            title: "Solo eventos",
-            url: "https://manifest-gcp-us-east1-vop1.fastly.mux.com/dGuVCvN01Z1dOac9BJ8eFayqlEd01Tq7TiKSwnMiGvbbdlVpbjNb01jiF5boelMhawUpzMY00HZw613oFBEmv1ieGR00ySO1191q00is6v9i8AQuw/rendition.m3u8?cdn=fastly&exclude_pdt=false&expires=1738102380&live=1&rid=bTsv1EIqw87rryr4T4fYZyZ01tdBpoYr9Iy8J3wsj59k&skid=default&signature=Njc5OTU2NmNfYzIzODk1OTQzMmJjYmY5YTY3MTM2ZGFjZmI1YzBhZGI0NzI0NWIzYzc1ZjY2MmY4Y2Y3ZjI4OTBmOTRkMjFhYg%3D%3D&vsid=vEsQDzFdE01sFvuTUN5dyX6QZx00x7ZmqwvvcuwkxOTu02TC02doXyETEJamYl5A5EkP0102l5gkTBpiECn0200hnomB6YJhHUPEonzzNVtqUmDrDs011EBbXOBTW9G3zb1aYkX4K&CMCD=cid%3D%22sCgrwC01SM00zaYdB00EDw8xiIy15OXdD2MCN00NbwMtoks%22%2Csid%3D%2249de2222-c665-4395-a9cc-fcef86ebb173%22",
+            title: "Caracol TV",
+            url: "https://stream.gia.tv/giatv/giatv-Gary2CanalGary2Canal/Gary2CanalGary2Canal/chunks.m3u8",
             type: 'hls'
         },
         {
-            title: "T",
-            url: "https://dglvz29s.fubohd.com/espn2/tracks-v1a1/mono.m3u8?token=666bf951dd49ee8611c0f9735b1f82da31e48115-c4-1737518257-1737482257",
+            title: "Win+",
+            url: "https://cgxheq.fubohd.com/winsportsplus/tracks-v1a1/mono.m3u8?token=7020e10dfe32e71130607d8502e2a99c7e10211c-1c-1737620067-1737584067",
             type: 'hls'
         },
         {
-            title: "Another HLS Stream",
-            url: "https://test-streams.mux.dev/test_001/stream.m3u8",
+            title: "Dsports",
+            url: "https://vadp.pricesaskeloadsc.com/dsports/tracks-v1a1/mono.m3u8?token=d56335ab493eb4da6dedf1c5d96f1fb6b898eb2f-a5-1737620134-1737584134",
             type: 'hls'
         },
         {
-            title: "Sintel Trailer",
+            title: "ESPN",
             url: "https://media.w3.org/2010/05/sintel/trailer.mp4",
-            type: 'mp4'
+            type: 'hls'
+        },
+      {
+            title: "ESPN 2",
+            url: "https://media.w3.org/2010/05/sintel/trailer.mp4",
+            type: 'hls'
+        },
+      {
+            title: "ESPN 3",
+            url: "https://media.w3.org/2010/05/sintel/trailer.mp4",
+            type: 'hls'
+        },
+      {
+            title: "ESPN 4",
+            url: "https://media.w3.org/2010/05/sintel/trailer.mp4",
+            type: 'hls'
+        },
+      {
+            title: "ESPN Extra",
+            url: "https://media.w3.org/2010/05/sintel/trailer.mp4",
+            type: 'hls'
+        },
+      {
+            title: "ESPN Premium",
+            url: "https://media.w3.org/2010/05/sintel/trailer.mp4",
+            type: 'hls'
+        },
+      {
+            title: "Solo eventos",
+            url: "https://ch.livestreamdz.xyz/espn2/tracks-v1a1/mono.m3u8?md5=rrwkpGOlTw_JqjgKtSKScg&expires=1737612647",
+            type: 'hls'
         }
     ];
 
@@ -83,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         video.removeAttribute('src');
     }
 
-    // Load stream based on type with enhanced buffering
+    // Load stream based on type
     function loadStream(index) {
         destroyCurrentPlayer();
 
@@ -91,20 +107,26 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPlayingIndex = index;
         updatePlaylistUI();
 
-        // Handle different stream types with advanced buffering
+        // Enhanced FLV player configuration
         if (streamInfo.type === 'flv' && flvjs.isSupported()) {
             flvPlayer = flvjs.createPlayer({
                 type: 'flv',
                 url: streamInfo.url,
                 isLive: streamInfo.url.includes('live'),
+                cors: true,
+                hasAudio: true,
+                hasVideo: true,
                 config: {
-                    lazyLoad: false,
-                    autoCleanupSourceBuffer: true,
-                    autoCleanupMaxBackwardDistance: 120,
-                    autoCleanupMinBackwardDistance: 60,
-                    enableWorker: true,
                     enableStashBuffer: true,
-                    stashInitialSize: 1024 * 1024 * 2  // 2MB initial stash
+                    stashInitialSize: 4 * 1024 * 1024, // 4MB stash size for faster loading
+                    enableWorker: true,
+                    seekType: 'range',
+                    lazyLoad: false,
+                    lazyLoadMaxDuration: 180,
+                    deferLoadAfterSourceOpen: false,
+                    fixAudioTimestampGap: true,
+                    accurateSeek: true,
+                    autoCleanupSourceBuffer: true,
                 }
             });
             
@@ -115,18 +137,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 video.play();
                 updateVideoControls();
             });
-        } else if (streamInfo.type === 'hls' && Hls.isSupported()) {
+        } 
+        // Enhanced HLS player configuration with optimized bandwidth settings
+        else if (streamInfo.type === 'hls' && Hls.isSupported()) {
             hlsPlayer = new Hls({
-                ...ADVANCED_BUFFER_CONFIG,
                 debug: false,
                 enableWorker: true,
+                lowLatencyMode: true,
+                backBufferLength: 90,
+                maxBufferSize: 4 * 1000 * 1000, // 4MB buffer size
+                maxBufferLength: 60,
+                maxMaxBufferLength: 700,
+                startFragPrefetch: true,
                 autoStartLoad: true,
                 startPosition: -1,
-                // Network and performance optimizations
-                xhrSetup: (xhr, url) => {
-                    xhr.withCredentials = false;  // Disable credentials
-                    xhr.timeout = 10000;  // 10-second timeout
-                }
+                maxLoadingDelay: 5,
+                progressive: true,
+                testBandwidth: true,
+                // Configure initial bandwidth estimate to 4Mbps
+                abrEwmaDefaultEstimate: 4000000, // 4Mbps initial estimate
+                abrBandWidthFactor: 0.95,
+                abrBandWidthUpFactor: 0.7,
+                abrMaxWithRealBitrate: true,
+                // Optimize streaming parameters
+                liveSyncDurationCount: 3,
+                liveMaxLatencyDurationCount: 10,
+                maxFragLookUpTolerance: 0.5,
+                // Improve loading retry settings
+                manifestLoadingMaxRetry: 4,
+                manifestLoadingRetryDelay: 500,
+                levelLoadingMaxRetry: 4,
+                levelLoadingRetryDelay: 500,
             });
 
             hlsPlayer.loadSource(streamInfo.url);
@@ -137,19 +178,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateVideoControls();
             });
 
+            // Advanced error handling and recovery
             hlsPlayer.on(Hls.Events.ERROR, (event, data) => {
-                console.error('HLS Error:', data);
-                // Fallback to native HLS support if available
-                if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = streamInfo.url;
-                    video.play();
+                if (data.fatal) {
+                    switch (data.type) {
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            hlsPlayer.startLoad(); // Try reloading
+                            break;
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            hlsPlayer.recoverMediaError();
+                            break;
+                        default:
+                            destroyCurrentPlayer();
+                            loadStream(currentPlayingIndex); // Restart stream
+                            break;
+                    }
                 }
             });
         } else {
-            // Fallback for non-HLS/FLV or unsupported browsers
+            // Enhanced native player configuration
+            video.preload = "auto";
             video.src = streamInfo.url;
             video.play();
         }
+
+        initializeTVControls();
     }
 
     // Update video controls
@@ -247,20 +300,70 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // TV Mode Navigation
+    // Enhanced TV Mode Navigation
+    let focusedElement = null;
+    const focusableElements = ['playPauseBtn', 'fullscreenBtn'];
+    let currentFocusIndex = -1;
+
     function handleTVNavigation(e) {
         switch (e.key) {
             case 'ArrowUp':
                 if (currentPlayingIndex > 0) {
+                    removeTVFocus();
                     loadStream(currentPlayingIndex - 1);
                 }
                 break;
             case 'ArrowDown':
                 if (currentPlayingIndex < playlist.length - 1) {
+                    removeTVFocus();
                     loadStream(currentPlayingIndex + 1);
                 }
                 break;
+            case 'ArrowLeft':
+                navigateVideoControls('prev');
+                break;
+            case 'ArrowRight':
+                navigateVideoControls('next');
+                break;
+            case 'Enter':
+                if (focusedElement) {
+                    focusedElement.click();
+                }
+                break;
         }
+    }
+
+    function navigateVideoControls(direction) {
+        removeTVFocus();
+        
+        if (direction === 'next') {
+            currentFocusIndex = (currentFocusIndex + 1) % focusableElements.length;
+        } else {
+            currentFocusIndex = currentFocusIndex <= 0 ? 
+                focusableElements.length - 1 : 
+                currentFocusIndex - 1;
+        }
+
+        focusedElement = document.getElementById(focusableElements[currentFocusIndex]);
+        addTVFocus();
+    }
+
+    function addTVFocus() {
+        if (focusedElement) {
+            focusedElement.classList.add('tv-focus');
+        }
+    }
+
+    function removeTVFocus() {
+        if (focusedElement) {
+            focusedElement.classList.remove('tv-focus');
+        }
+    }
+
+    function initializeTVControls() {
+        currentFocusIndex = 0;
+        focusedElement = document.getElementById(focusableElements[currentFocusIndex]);
+        addTVFocus();
     }
 
     // Advanced Debugger Prevention
