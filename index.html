@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Transmitir Pantalla a SRS (WebRTC)</title>
+  <title>Transmitir Pantalla a SRS</title>
 </head>
 <body style="text-align:center; background:#111; color:white;">
   <h2>📺 Transmisión de Pantalla vía WebRTC</h2>
@@ -10,7 +10,7 @@
   <br>
   <button onclick="startShare()">Compartir pantalla</button>
 
-  <!-- Adaptador WebRTC oficial de SRS -->
+  <!-- ✅ Importa la librería oficial de SRS -->
   <script src="https://cdn.jsdelivr.net/npm/srs-sdk@1.0.37/webrtc-adaptor.min.js"></script>
 
   <script>
@@ -31,7 +31,7 @@
           alert("Error al transmitir.");
         };
 
-        await adaptor.publish("webrtc://168.231.71.30/live/stream", stream); // 👈 Cambia por tu IP o dominio
+        await adaptor.publish("webrtc://168.231.71.30/live/stream", stream); // Cambia IP si es necesario
       } catch (err) {
         console.error("Error al capturar pantalla:", err);
         alert("No se pudo capturar la pantalla.");
