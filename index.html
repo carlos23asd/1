@@ -1,42 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Transmisión WebRTC con SRS</title>
-  <style>
-    body { font-family: Arial; text-align: center; background: #121212; color: white; }
-    video { width: 480px; border: 2px solid #ff0033; border-radius: 10px; margin-top: 20px; }
-    button { padding: 10px 20px; margin: 20px; background: #ff0033; border: none; color: white; border-radius: 5px; cursor: pointer; }
-    button:hover { background: #ff3344; }
-  </style>
+  <meta charset="UTF-8">
+  <title>Transmitir WebRTC a SRS</title>
 </head>
-<body>
-  <h2>🚀 Emitir en vivo con WebRTC + SRS</h2>
-  <video id="video" autoplay muted playsinline></video>
+<body style="text-align:center; background:#111; color:white;">
+  <h2>Transmisión WebRTC</h2>
+  <video id="video" autoplay muted playsinline style="width: 480px; border: 2px solid red;"></video>
   <br>
-  <button onclick="startPublish()">Iniciar Transmisión</button>
+  <button onclick="startPublish()">Iniciar transmisión</button>
 
-  <script src="https://cdn.jsdelivr.net/npm/srs-sdk/webrtc-adaptor.min.js"></script>
+  <!-- 👇 Aquí importamos el adaptador correcto -->
+  <script src="https://cdn.jsdelivr.net/npm/srs-sdk@1.0.37/webrtc-adaptor.min.js"></script>
+
   <script>
     async function startPublish() {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       document.getElementById('video').srcObject = stream;
 
       const config = {
-        url: "webrtc://168.231.71.30/live/livestream", // ← Cambia esto por tu IP o dominio
+        url: "webrtc://168.231.71.30/live/stream", // Reemplaza con tu IP
         stream: stream
       };
 
       const adaptor = new SrsRtcPublisherAsync();
 
-      adaptor.onpublish = (e) => {
-        console.log("✅ Publicando WebRTC correctamente.");
+      adaptor.onpublish = () => {
+        console.log("✅ Transmitiendo a SRS.");
         alert("¡Transmisión iniciada!");
       };
 
       adaptor.onerror = (e) => {
-        console.error("❌ Error al publicar:", e);
-        alert("Error al iniciar transmisión.");
+        console.error("❌ Error al transmitir:", e);
+        alert("Error al transmitir.");
       };
 
       await adaptor.publish(config.url, config.stream);
