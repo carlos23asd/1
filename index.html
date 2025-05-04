@@ -2,36 +2,44 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Transmitir Pantalla a SRS</title>
+  <title>Compartir pantalla con SRS</title>
 </head>
 <body style="text-align:center; background:#111; color:white;">
-  <h2>📺 Transmisión de Pantalla vía WebRTC</h2>
+  <h2>🖥️ Compartir pantalla a SRS vía WebRTC</h2>
   <video id="video" autoplay muted playsinline style="width: 480px; border: 2px solid red;"></video>
   <br>
-  <button onclick="startShare()">Compartir pantalla</button>
+  <button id="btnShare" disabled>Esperando librería...</button>
 
-  <!-- ✅ Importa la librería oficial de SRS -->
-  <script src="https://cdn.jsdelivr.net/npm/srs-sdk@1.0.37/webrtc-adaptor.min.js"></script>
+  <!-- ✅ Librería oficial de SRS -->
+  <script src="https://cdn.jsdelivr.net/npm/srs-sdk@1.0.37/webrtc-adaptor.min.js" onload="init()"></script>
 
   <script>
+    function init() {
+      console.log("✅ Librería cargada correctamente");
+      const button = document.getElementById('btnShare');
+      button.innerText = "Compartir pantalla";
+      button.disabled = false;
+      button.onclick = startShare;
+    }
+
     async function startShare() {
       try {
-        const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+        const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
         document.getElementById('video').srcObject = stream;
 
         const adaptor = new SrsRtcPublisherAsync();
 
         adaptor.onpublish = () => {
-          console.log("✅ Transmitiendo pantalla a SRS.");
-          alert("¡Transmisión iniciada!");
+          console.log("✅ Transmisión iniciada");
+          alert("¡Compartiendo pantalla en vivo!");
         };
 
         adaptor.onerror = (e) => {
           console.error("❌ Error al transmitir:", e);
-          alert("Error al transmitir.");
+          alert("Error en la transmisión");
         };
 
-        await adaptor.publish("webrtc://168.231.71.30/live/stream", stream); // Cambia IP si es necesario
+        await adaptor.publish("webrtc://168.231.71.30/live/stream", stream); // Reemplaza IP si es necesario
       } catch (err) {
         console.error("Error al capturar pantalla:", err);
         alert("No se pudo capturar la pantalla.");
