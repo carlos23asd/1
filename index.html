@@ -2,49 +2,44 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Compartir pantalla con SRS</title>
+  <title>Compartir pantalla a SRS sin librerías</title>
 </head>
 <body style="text-align:center; background:#111; color:white;">
-  <h2>🖥️ Compartir pantalla a SRS vía WebRTC</h2>
+  <h2>🖥️ Compartir pantalla vía WebRTC (sin librerías)</h2>
   <video id="video" autoplay muted playsinline style="width: 480px; border: 2px solid red;"></video>
   <br>
-  <button id="btnShare" disabled>Esperando librería...</button>
-
-  <!-- ✅ Librería oficial de SRS -->
-  <script src="https://cdn.jsdelivr.net/npm/srs-sdk@1.0.37/webrtc-adaptor.min.js" onload="init()"></script>
+  <button onclick="startShare()">Compartir pantalla</button>
 
   <script>
-    function init() {
-      console.log("✅ Librería cargada correctamente");
-      const button = document.getElementById('btnShare');
-      button.innerText = "Compartir pantalla";
-      button.disabled = false;
-      button.onclick = startShare;
-    }
+    const api = 'http://168.231.71.30:1985/rtc/v1/publish/'; // ⚠️ Cambia por tu IP si es distinta
+    const streamUrl = 'webrtc://168.231.71.30/live/stream';   // ⚠️ Igual aquí
 
     async function startShare() {
       try {
         const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
         document.getElementById('video').srcObject = stream;
 
-        const adaptor = new SrsRtcPublisherAsync();
+        const pc = new RTCPeerConnection(null);
+        stream.getTracks().forEach(track => pc.addTrack(track, stream));
 
-        adaptor.onpublish = () => {
-          console.log("✅ Transmisión iniciada");
-          alert("¡Compartiendo pantalla en vivo!");
-        };
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
 
-        adaptor.onerror = (e) => {
-          console.error("❌ Error al transmitir:", e);
-          alert("Error en la transmisión");
-        };
+        const url = `${api}?sdp=${encodeURIComponent(offer.sdp)}&streamurl=${encodeURIComponent(streamUrl)}&clientip=`;
 
-        await adaptor.publish("webrtc://168.231.71.30/live/stream", stream); // Reemplaza IP si es necesario
+        const response = await fetch(url, { method: 'POST' });
+        const data = await response.json();
+
+        await pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: data.sdp }));
+
+        console.log('✅ Transmisión WebRTC iniciada con éxito.');
+        alert('¡Pantalla compartida con SRS!');
       } catch (err) {
-        console.error("Error al capturar pantalla:", err);
-        alert("No se pudo capturar la pantalla.");
+        console.error('❌ Error al compartir pantalla:', err);
+        alert('No se pudo iniciar la transmisión.');
       }
     }
   </script>
 </body>
 </html>
+
