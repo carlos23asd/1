@@ -1,87 +1,46 @@
-<html lang="es">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Secure Video Player Login</title>
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        .login-container {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
-
-        .login-container h2 {
-            color: #fff;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        #loginForm {
-            display: flex;
-            flex-direction: column;
-        }
-
-        #passwordInput {
-            padding: 15px;
-            margin-bottom: 20px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            text-align: center;
-            font-size: 18px;
-            letter-spacing: 5px;
-        }
-
-        #passwordInput::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        #loginError {
-            color: #ff4d4d;
-            margin-bottom: 20px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .login-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            z-index: -1;
-            animation: gradientBG 15s ease infinite;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>Transmisión WebRTC con SRS</title>
+  <style>
+    body { font-family: Arial; text-align: center; background: #121212; color: white; }
+    video { width: 480px; border: 2px solid #ff0033; border-radius: 10px; margin-top: 20px; }
+    button { padding: 10px 20px; margin: 20px; background: #ff0033; border: none; color: white; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #ff3344; }
+  </style>
 </head>
 <body>
-    <div class="login-background"></div>
-    <div class="container" style="justify-content: center;">
-        <div class="login-container">
-            <h2>Secure Access</h2>
-            <form id="loginForm">
-                <input 
-                    type="password" 
-                    id="passwordInput" 
-                    placeholder="Enter Password" 
-                    autocomplete="off" 
-                    required
-                >
-                <div id="loginError">Incorrect Password</div>
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    </div>
+  <h2>🚀 Emitir en vivo con WebRTC + SRS</h2>
+  <video id="video" autoplay muted playsinline></video>
+  <br>
+  <button onclick="startPublish()">Iniciar Transmisión</button>
 
-    <script src="login.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/srs-sdk/webrtc-adaptor.min.js"></script>
+  <script>
+    async function startPublish() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      document.getElementById('video').srcObject = stream;
+
+      const config = {
+        url: "webrtc://168.231.71.30/live/livestream", // ← Cambia esto por tu IP o dominio
+        stream: stream
+      };
+
+      const adaptor = new SrsRtcPublisherAsync();
+
+      adaptor.onpublish = (e) => {
+        console.log("✅ Publicando WebRTC correctamente.");
+        alert("¡Transmisión iniciada!");
+      };
+
+      adaptor.onerror = (e) => {
+        console.error("❌ Error al publicar:", e);
+        alert("Error al iniciar transmisión.");
+      };
+
+      await adaptor.publish(config.url, config.stream);
+    }
+  </script>
 </body>
 </html>
